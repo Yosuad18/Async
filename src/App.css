@@ -1,0 +1,53 @@
+.App {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.status-message {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.status-message.error {
+  color: #d9534f;
+  border: 1px solid #d9534f;
+  border-radius: 6px;
+  background-color: #fdf7f7;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 15px;
+}
+
+.user-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: #ffffff;
+}
+
+.user-card h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
