@@ -1,0 +1,24 @@
+import axios from 'axios';
+
+const axiosClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'Error de red o CORS';
+
+    console.error('[API Error]', message);
+
+    return Promise.reject(error);
+  },
+);
+
+export default axiosClient;

@@ -1,59 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { fetchUsers } from '../services/apiService';
+import { useQuestions } from '../hooks/useQuestions';
+import { saveQuestion } from '../services/questionService';
+import { useState } from 'react';
 
 function ApiDataList() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: questions, loading, error, refetch } = useQuestions();
+  const [questionText, setQuestionText] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  // Función interna para obtener datos
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!questionText.trim()) return;
+
+    setSaving(true);
     try {
-      const data = await fetchUsers();
-      setUsers(data);
+      await saveQuestion({ text: questionText.trim() });
+      setQuestionText('');
+      refetch();
     } catch (err) {
-      setError(err.message || 'Ocurrió un error inesperado al cargar la API.');
+      console.error('Error al guardar:', err);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  // 1. Renderizado en estado de carga
   if (loading) {
-    return <div className="status-message">Cargando datos de la API...</div>;
+    return <div className="status-message">Cargando preguntas...</div>;
   }
 
-  // 2. Renderizado en estado de error
   if (error) {
     return (
       <div className="status-message error">
         <p>Error: {error}</p>
-        <button onClick={loadData}>Reintentar</button>
+        <button onClick={refetch}>Reintentar</button>
       </div>
     );
   }
 
-  // 3. Renderizado principal con datos
   return (
     <div className="data-container">
-      <h2>Lista de Usuarios desde API</h2>
-      <button onClick={loadData} style={{ marginBottom: '15px' }}>
-        Recargar Datos
+      <h2>Mis Preguntas</h2>
+
+      <form onSubmit={handleSave} style={{ marginBottom: '15px' }}>
+        <input
+          type="text"
+          value={questionText}
+          onChange={(e) => setQuestionText(e.target.value)}
+          placeholder="Escribe una pregunta..."
+          disabled={saving}
+        />
+        <button type="submit" disabled={saving || !questionText.trim()}>
+          {saving ? 'Guardando...' : 'Guardar'}
+        </button>
+      </form>
+
+      <button onClick={refetch} style={{ marginBottom: '15px' }}>
+        Recargar
       </button>
 
       <ul className="user-list">
-        {users.map((user) => (
-          <li key={user.id} className="user-card">
-            <h3>{user.name}</h3>
-            <p><strong>Username:</strong> @{user.username}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Compañía:</strong> {user.company?.name}</p>
+        {questions.map((q) => (
+          <li key={q.id} className="user-card">
+            <p>{q.text}</p>
           </li>
         ))}
       </ul>
